@@ -14,10 +14,12 @@ st.title("🎓 Prediksi Status Mahasiswa - Jaya Jaya Institut")
 st.write("Masukkan informasi siswa untuk memprediksi apakah mereka akan lulus, dropout, atau masih aktif.")
 
 # Contoh inputan fitur penting (ganti sesuai fitur X yang kamu pakai)
-age = st.number_input("Usia saat mendaftar", min_value=16, max_value=40, value=20)
-admission_grade = st.number_input("Nilai saat masuk (0-200)", min_value=0, max_value=200, value=120)
-curricular_enrolled = st.number_input("Jumlah matkul diambil sem 1", min_value=0, max_value=15, value=5)
-curricular_approved = st.number_input("Jumlah matkul lulus sem 1", min_value=0, max_value=15, value=4)
+age = st.number_input("Usia saat mendaftar", 16, 40, 20)
+tuition_paid = st.selectbox("Uang kuliah sudah dibayar?", ["Ya", "Tidak"])
+scholarship = st.selectbox("Penerima beasiswa?", ["Ya", "Tidak"])
+admission_grade = st.number_input("Nilai saat masuk (0-200)", 0, 200, 120)
+curricular_enrolled = st.number_input("Jumlah matkul diambil sem 1", 0, 15, 5)
+curricular_approved = st.number_input("Jumlah matkul lulus sem 1", 0, 15, 4)
 
 # Ubah input ke format model
 X_input = np.array([[
