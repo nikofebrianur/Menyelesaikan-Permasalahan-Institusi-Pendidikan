@@ -33,7 +33,18 @@ X_input = np.array([[
 
 # Predict
 if st.button("Prediksi"):
+    # Susun input dalam urutan dan format yang sesuai
+    X_input = np.array([[
+        age,
+        1 if tuition_paid == "Ya" else 0,
+        1 if scholarship == "Ya" else 0,
+        admission_grade,
+        curricular_enrolled,
+        curricular_approved
+    ]])
+
+    # (Opsional) Scaling di sini kalau model kamu pakai scaler
+
     prediction = model.predict(X_input)[0]
     label = le.inverse_transform([prediction])[0]
     st.success(f"✅ Prediksi: **{label}**")
-
