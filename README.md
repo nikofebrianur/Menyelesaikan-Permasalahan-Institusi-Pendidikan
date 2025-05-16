@@ -43,13 +43,13 @@ Dashboard dibuat menggunakan Looker Studio dan menampilkan:
 - Korelasi faktor penting terhadap status (usia, jumlah mata kuliah lulus, dll)
 - Filter interaktif berdasarkan gender, beasiswa, dll
 
-🔗 Link dashboard: (masukkan link Looker Studio di sini)
+🔗 Link dashboard: https://lookerstudio.google.com/reporting/4b2b86d7-6ffe-4a14-aad5-118e72fd9b42
 
 ## Machine Learning Prototype
 
 Aplikasi prediksi status mahasiswa dibuat menggunakan Streamlit dan dapat diakses oleh tim akademik secara online.
 
-🔗 Link Streamlit: (masukkan link Streamlit di sini)
+🔗 Link Streamlit: https://menyelesaikan-permasalahan-institusi-pendidikan-g3hrpcodgry9cl.streamlit.app/
 
 ## Conclusion
 
