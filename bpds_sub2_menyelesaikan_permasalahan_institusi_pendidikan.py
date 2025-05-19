@@ -11,6 +11,8 @@ Tahap ini memuat library yang dibutuhkan dan membaca dataset utama yang digunaka
 """
 
 import pandas as pd
+import seaborn as sns
+import matplotlib.pyplot as plt
 
 df = pd.read_csv('/content/data.csv', sep=';')
 df.head()
@@ -29,8 +31,120 @@ df.info()
 # Lihat 5 baris pertama
 df.head()
 
-# Cek jumlah masing-masing status
 df['Status'].value_counts()
+
+"""### EDA Univariate
+
+Analisis univariat dilakukan untuk memahami distribusi masing-masing fitur secara individu, baik yang bertipe numerik maupun kategorikal.
+
+Beberapa fitur yang dieksplorasi:
+- **Admission_grade** → menunjukkan penyebaran nilai masuk mahasiswa.
+- **Age_at_enrollment** → memberikan gambaran usia tipikal saat mendaftar.
+- **Scholarship_holder** → sebaran antara penerima beasiswa dan non-penerima.
+- **Tuition_fees_up_to_date** → menggambarkan kepatuhan pembayaran kuliah.
+- **Gender** → distribusi jenis kelamin dalam populasi mahasiswa.
+
+Visualisasi ini digunakan untuk memberikan konteks sebelum dilakukan pemodelan prediksi dropout.
+
+"""
+
+plt.figure(figsize=(6,4))
+sns.histplot(df['Admission_grade'], kde=True)
+plt.title("Distribusi Admission Grade")
+plt.xlabel("Admission Grade")
+plt.ylabel("Jumlah Mahasiswa")
+plt.show()
+
+plt.figure(figsize=(6,4))
+sns.histplot(df['Age_at_enrollment'], kde=True, color='orange')
+plt.title("Distribusi Usia Saat Masuk")
+plt.xlabel("Usia")
+plt.ylabel("Jumlah Mahasiswa")
+plt.show()
+
+plt.figure(figsize=(6,4))
+sns.histplot(df['Curricular_units_1st_sem_approved'], bins=15, color='green')
+plt.title("Distribusi Jumlah Matkul Lulus Semester 1")
+plt.xlabel("Jumlah Matkul Lulus")
+plt.ylabel("Jumlah Mahasiswa")
+plt.show()
+
+# Konversi nilai numerik/scaled ke label kategori readable
+df['Scholarship_label'] = df['Scholarship_holder'].apply(lambda x: 'Yes' if x > 0 else 'No')
+df['Tuition_status_label'] = df['Tuition_fees_up_to_date'].apply(lambda x: 'Paid' if x > 0 else 'Not yet')
+df['Gender_label'] = df['Gender'].apply(lambda x: 'Male' if x > 0 else 'Female')
+
+plt.figure(figsize=(6,4))
+sns.countplot(x='Scholarship_label', data=df)
+plt.title("Distribusi Penerima Beasiswa")
+plt.xlabel("Penerima Beasiswa")
+plt.ylabel("Jumlah Mahasiswa")
+plt.show()
+
+plt.figure(figsize=(6,4))
+sns.countplot(x='Tuition_status_label', data=df)
+plt.title("Distribusi Status Pembayaran Kuliah")
+plt.xlabel("Status Pembayaran")
+plt.ylabel("Jumlah Mahasiswa")
+plt.show()
+
+plt.figure(figsize=(6,4))
+sns.countplot(x='Gender_label', data=df)
+plt.title("Distribusi Gender Mahasiswa")
+plt.xlabel("Gender")
+plt.ylabel("Jumlah Mahasiswa")
+plt.show()
+
+"""### EDA Multivariate
+
+Analisis multivariat dilakukan untuk mengevaluasi keterkaitan antar lebih dari satu fitur terhadap status mahasiswa (Dropout, Enrolled, Graduate). Analisis ini sangat penting untuk mengidentifikasi faktor-faktor kunci yang berkontribusi terhadap risiko dropout.
+
+Beberapa kombinasi fitur yang dianalisis:
+- Beasiswa dan status pembayaran terhadap jumlah dropout.
+- Korelasi nilai masuk dengan keberhasilan akademik semester awal.
+- Interaksi beasiswa dan gender terhadap status akhir mahasiswa.
+
+Visualisasi ini membantu memahami pola dropout lebih dalam dan menjadi dasar pemodelan prediksi selanjutnya.
+
+"""
+
+plt.figure(figsize=(8,5))
+sns.countplot(x='Tuition_status_label', hue='Scholarship_label', data=df)
+plt.title("Pembayaran vs Beasiswa")
+plt.xlabel("Status Pembayaran Kuliah")
+plt.ylabel("Jumlah Mahasiswa")
+plt.legend(title='Penerima Beasiswa')
+plt.show()
+
+plt.figure(figsize=(8,5))
+sns.scatterplot(
+    x='Admission_grade',
+    y='Curricular_units_1st_sem_approved',
+    hue='Status',
+    data=df,
+    alpha=0.7
+)
+plt.title("Nilai Masuk vs Matkul Lulus Semester 1 per Status Mahasiswa")
+plt.xlabel("Admission Grade")
+plt.ylabel("Matkul Lulus Semester 1")
+plt.show()
+
+plt.figure(figsize=(6,4))
+sns.boxplot(x='Status', y='Admission_grade', data=df)
+plt.title("Distribusi Nilai Masuk per Status Mahasiswa")
+plt.xlabel("Status")
+plt.ylabel("Admission Grade")
+plt.show()
+
+sns.catplot(
+    x='Scholarship_label',
+    col='Gender_label',
+    hue='Status',
+    kind='count',
+    data=df,
+    height=5,
+    aspect=0.9
+)
 
 """# Data Cleaning & Preprocessing
 Tahapan ini fokus pada:
@@ -60,7 +174,7 @@ from sklearn.preprocessing import LabelEncoder
 le = LabelEncoder()
 df['Status_encoded'] = le.fit_transform(df['Status'])  # Graduate, Dropout, Enrolled → 0/1/2
 
-categorical_cols = df.select_dtypes(include='object').columns.drop('Status')  # kecuali kolom target asli
+categorical_cols = df.select_dtypes(include='object').columns.drop('Status')
 
 from sklearn.preprocessing import LabelEncoder
 le_cat = LabelEncoder()
@@ -68,33 +182,26 @@ le_cat = LabelEncoder()
 for col in categorical_cols:
     df[col] = le_cat.fit_transform(df[col])
 
-from sklearn.preprocessing import StandardScaler
-
-# Drop kolom target dari kolom numerik
-numerical_cols = df.select_dtypes(include='int64').columns.drop('Status_encoded')
-
-scaler = StandardScaler()
-df[numerical_cols] = scaler.fit_transform(df[numerical_cols])
-
 df_looker = df.copy()
+
 df_looker['Gender'] = df_raw['Gender'].map({0: 'Female', 1: 'Male'})
 df_looker['Scholarship_holder'] = df_raw['Scholarship_holder'].map({0: 'No', 1: 'Yes'})
 df_looker['Tuition_fees_up_to_date'] = df_raw['Tuition_fees_up_to_date'].map({0: 'Not yet', 1: 'Paid'})
 df_looker['Status'] = df['Status_encoded'].map({0: 'Graduate', 1: 'Dropout', 2: 'Enrolled'})
 
-# Drop kolom yang tidak dipakai
 df_looker.drop(columns=['Status_encoded'], inplace=True)
 
-# Simpan ke CSV baru
 df_looker.to_csv('df_looker_studio_clean.csv', index=False)
-
 from google.colab import files
 files.download('df_looker_studio_clean.csv')
 
-print("Shape fitur:", X.shape)
-print("Shape label:", y.shape)
-X.head()
-y.value_counts()
+# 6. Baru lanjut ke scaling untuk modeling
+from sklearn.preprocessing import StandardScaler
+
+numerical_cols = df.select_dtypes(include='int64').columns.drop('Status_encoded')
+
+scaler = StandardScaler()
+df[numerical_cols] = scaler.fit_transform(df[numerical_cols])
 
 """# Feature Selection & Correlation Analysis
 
@@ -112,6 +219,11 @@ selected_features = [
 
 X = df[selected_features]
 y = df['Status_encoded']
+
+print("Shape fitur:", X.shape)
+print("Shape label:", y.shape)
+X.head()
+y.value_counts()
 
 import matplotlib.pyplot as plt
 import seaborn as sns
