@@ -4,13 +4,15 @@
 
 Jaya Jaya Institut merupakan institusi pendidikan tinggi yang telah berdiri sejak tahun 2000 dan mencetak banyak lulusan dengan reputasi baik. Namun, tingginya angka mahasiswa yang tidak menyelesaikan studi (dropout) menjadi tantangan serius bagi institusi ini. Untuk mengatasi hal ini, diperlukan deteksi dini terhadap siswa yang berpotensi dropout agar dapat diberikan intervensi atau bimbingan khusus.
 
-### Permasalahan Bisnis
+## Permasalahan Bisnis
 
-- Bagaimana memprediksi status akhir mahasiswa (lulus, dropout, atau masih aktif)?
-- Apa saja faktor penting yang mempengaruhi status mahasiswa?
-- Bagaimana memvisualisasikan performa siswa secara efektif dalam bentuk dashboard?
+- Tingginya angka dropout mahasiswa yang mencapai lebih dari 30%.
+- Tidak adanya sistem prediksi untuk mendeteksi potensi dropout secara dini.
+- Pihak kampus kesulitan mengidentifikasi faktor-faktor yang mempengaruhi kelulusan mahasiswa.
+- Tidak tersedia dashboard monitoring performa akademik siswa yang interaktif dan informatif.
 
-### Cakupan Proyek
+
+## Cakupan Proyek
 
 - Eksplorasi dan analisis dataset performa mahasiswa
 - Pembangunan model machine learning untuk prediksi status mahasiswa
@@ -19,13 +21,22 @@ Jaya Jaya Institut merupakan institusi pendidikan tinggi yang telah berdiri seja
 
 ## Data Preparation
 
-Dataset: `data.csv` dari institusi Jaya Jaya Institut
+### Dataset: `data.csv` dari institusi Jaya Jaya Institut
 
 Langkah pembersihan data:
 - Menghapus kolom yang tidak relevan: `Application_mode`, `Application_order`, `Daytime_evening_attendance`, `Nacionality`
 - Label encoding untuk kolom kategorikal
 - Standarisasi fitur numerik
 - Konversi label `Status` menjadi label numerik multiclass: `Graduate`, `Dropout`, `Enrolled`
+
+### Setup Environment
+
+#### Menggunakan Anaconda:
+```bash
+conda create --name edu-ml python=3.9
+conda activate edu-ml
+pip install -r requirements.txt
+```
 
 ## Modeling & Evaluation
 
@@ -47,7 +58,12 @@ Dashboard dibuat menggunakan Looker Studio dan menampilkan:
 
 ## Machine Learning Prototype
 
-Aplikasi prediksi status mahasiswa dibuat menggunakan Streamlit dan dapat diakses oleh tim akademik secara online.
+Untuk menjalankan prototype prediksi status mahasiswa secara lokal menggunakan Streamlit:
+```bash
+streamlit run app.py
+```
+
+Aplikasi prediksi status mahasiswa dapat dibuat menggunakan Streamlit dan dapat diakses oleh tim akademik secara online.
 
 🔗 Link Streamlit: https://menyelesaikan-permasalahan-institusi-pendidikan-g3hrpcodgry9cl.streamlit.app/
 
